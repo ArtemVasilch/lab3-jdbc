@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- Додаємо простір імен Thymeleaf (th:) -->
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Лабораторна 3 - Аеропорт (JPA)</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 90%; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background-color: #f0f0f0; }
+        form { background-color: #f9f9f9; border: 1px solid #ccc; padding: 15px; width: 90%; border-radius: 8px; }
+        input[type="text"] { width: 200px; padding: 5px; border-radius: 4px; border: 1px solid #ccc; }
+        button { padding: 8px 15px; border-radius: 4px; border: none; cursor: pointer; background-color: #007bff; color: white;}
+        .delete-link { color: red; text-decoration: none; margin-left: 10px; }
+        .edit-link { color: #0069d9; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h2>Лабораторна робота 3 (Захищений спосіб - Spring Data JPA)</h2>
+    
+    <!-- Форма для ДОДАВАННЯ нового рейсу -->
+    <h3>Додати новий рейс (Безпечно)</h3>
+    <!-- 
+      th:object="${newFlight}" - прив'язує цю форму до об'єкта 'newFlight',
+      який ми передали з FlightController.java
+    -->
+    <form action="/add-flight" method="POST" th:object="${newFlight}">
+        <label>Місто:</label>
+        <!-- th:field="*{city}" - прив'язує це поле до 'city' в об'єкті 'newFlight' -->
+        <input type="text" th:field="*{city}" required />
+        
+        <label style="margin-left: 10px;">Країна:</label>
+        <input type="text" th:field="*{country}" required />
+        
+        <label style="margin-left: 10px;">Номер рейсу:</label>
+        <input type="text" th:field="*{flightNumber}" required />
+        
+        <button type="submit" style="margin-left: 10px;">Додати</button>
+    </form>
+
+    <br>
+
+    <!-- Таблиця для ПОКАЗУ всіх рейсів -->
+    <h3>Список рейсів у базі:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Місто</th>
+                <th>Країна</th>
+                <th>Номер рейсу</th>
+                <th>Дія</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 
+              Thymeleaf сам пройдеться по списку "flights",
+              який ми передали з FlightController.java
+            -->
+            <tr th:each="flight : ${flights}">
+                <td th:text="${flight.id}">1</td>
+                <td th:text="${flight.city}">Київ</td>
+                <td th:text="${flight.country}">Україна</td>
+                <td th:text="${flight.flightNumber}">PS-001</td>
+                <td>
+                    <!-- 
+                      Посилання "Редагувати", яке веде на /edit-flight
+                      і передає ID рейсу
+                    -->
+                    <a th:href="@{/edit-flight(id=${flight.id})}" class="edit-link">Редагувати</a>
+                    
+                    <!-- 
+                      Посилання для ВИДАЛЕННЯ, яке безпечно 
+                      передає ID в FlightController
+                    -->
+                    <a th:href="@{/delete-flight(id=${flight.id})}" class="delete-link">Видалити</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

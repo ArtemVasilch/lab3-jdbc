@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- Назва сторінки -->
+    <title>Редагувати рейс</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #fdfdfd; }
+        h2 { color: #333; }
+        form { background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px; padding: 20px; width: 90%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        div { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"] { width: 300px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #218838; }
+        a { color: #007bff; text-decoration: none; margin-top: 15px; display: inline-block; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <!-- 
+      Показуємо ID рейсу, який редагуємо, з об'єкта "flightToEdit"
+    -->
+    <h2>Редагування рейсу (ID: <span th:text="${flightToEdit.id}"></span>)</h2>
+
+    <!-- 
+      Ця форма відправляє дані методом POST на адресу "/update-flight".
+      th:object="${flightToEdit}" - Thymeleaf заповнює поля даними рейсу.
+    -->
+    <form action="/update-flight" method="POST" th:object="${flightToEdit}">
+
+        <!-- ВАЖЛИВО: приховане поле для ID, щоб Spring знав, який запис оновлювати -->
+        <input type="hidden" th:field="*{id}" />
+
+        <div>
+            <label>Місто:</label>
+            <input type="text" th:field="*{city}" required />
+        </div>
+        
+        <div>
+            <label>Країна:</label>
+            <input type="text" th:field="*{country}" required />
+        </div>
+        
+        <div>
+            <label>Номер рейсу:</label>
+            <input type="text" th:field="*{flightNumber}" required />
+        </div>
+        
+        <button type="submit">Зберегти зміни</button>
+    </form>
+    
+    <br>
+    <a href="/">Назад до головного списку</a>
+
+</body>
+</html>
