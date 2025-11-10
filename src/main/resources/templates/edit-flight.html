@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <!-- Назва сторінки -->
     <title>Редагувати рейс</title>
     <style>
         body { font-family: sans-serif; margin: 20px; background-color: #fdfdfd; }
@@ -18,18 +17,25 @@
     </style>
 </head>
 <body>
-    <!-- 
-      Показуємо ID рейсу, який редагуємо, з об'єкта "flightToEdit"
-    -->
+
+    <div style="position: absolute; top: 10px; right: 20px; text-align: right;">
+        <div sec:authorize="isAuthenticated()">
+            Вітаємо, <strong sec:authentication="name">User</strong>!
+            (Роль: <span sec:authentication="principal.authorities">ROLE</span>)
+            
+            <form th:action="@{/logout}" method="post" style="display:inline; border:none; padding:0; box-shadow:none;">
+                <button type="submit" style="background-color: #dc3545; margin-left: 10px;">Вийти</button>
+            </form>
+        </div>
+        <div sec:authorize="isAnonymous()">
+            <a th:href="@{/login}">Увійти</a>
+        </div>
+    </div>
+
     <h2>Редагування рейсу (ID: <span th:text="${flightToEdit.id}"></span>)</h2>
 
-    <!-- 
-      Ця форма відправляє дані методом POST на адресу "/update-flight".
-      th:object="${flightToEdit}" - Thymeleaf заповнює поля даними рейсу.
-    -->
-    <form action="/update-flight" method="POST" th:object="${flightToEdit}">
+    <form th:action="@{/update-flight}" method="POST" th:object="${flightToEdit}">
 
-        <!-- ВАЖЛИВО: приховане поле для ID, щоб Spring знав, який запис оновлювати -->
         <input type="hidden" th:field="*{id}" />
 
         <div>

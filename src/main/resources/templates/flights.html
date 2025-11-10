@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<!-- Додаємо простір імен Thymeleaf (th:) -->
-<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<html lang="uk" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Лабораторна 3 - Аеропорт (JPA)</title>
@@ -17,31 +16,40 @@
     </style>
 </head>
 <body>
+
+    <div style="position: absolute; top: 10px; right: 20px; text-align: right;">
+        <div sec:authorize="isAuthenticated()">
+            Вітаємо, <strong sec:authentication="name">User</strong>!
+            (Роль: <span sec:authentication="principal.authorities">ROLE</span>)
+            
+            <form th:action="@{/logout}" method="post" style="display:inline; border:none; padding:0; box-shadow:none;">
+                <button type="submit" style="background-color: #dc3545; margin-left: 10px;">Вийти</button>
+            </form>
+        </div>
+        <div sec:authorize="isAnonymous()">
+            <a th:href="@{/login}">Увійти</a>
+        </div>
+    </div>
+
     <h2>Лабораторна робота 3 (Захищений спосіб - Spring Data JPA)</h2>
     
-    <!-- Форма для ДОДАВАННЯ нового рейсу -->
-    <h3>Додати новий рейс (Безпечно)</h3>
-    <!-- 
-      th:object="${newFlight}" - прив'язує цю форму до об'єкта 'newFlight',
-      який ми передали з FlightController.java
-    -->
-    <form action="/add-flight" method="POST" th:object="${newFlight}">
-        <label>Місто:</label>
-        <!-- th:field="*{city}" - прив'язує це поле до 'city' в об'єкті 'newFlight' -->
-        <input type="text" th:field="*{city}" required />
-        
-        <label style="margin-left: 10px;">Країна:</label>
-        <input type="text" th:field="*{country}" required />
-        
-        <label style="margin-left: 10px;">Номер рейсу:</label>
-        <input type="text" th:field="*{flightNumber}" required />
-        
-        <button type="submit" style="margin-left: 10px;">Додати</button>
-    </form>
+    <div sec:authorize="hasRole('ADMIN')">
+        <h3>Додати новий рейс (Безпечно)</h3>
+        <form th:action="@{/add-flight}" method="POST" th:object="${newFlight}">
+            <label>Місто:</label>
+            <input type="text" th:field="*{city}" required />
+            
+            <label style="margin-left: 10px;">Країна:</label>
+            <input type="text" th:field="*{country}" required />
+            
+            <label style="margin-left: 10px;">Номер рейсу:</label>
+            <input type="text" th:field="*{flightNumber}" required />
+            
+            <button type="submit" style="margin-left: 10px;">Додати</button>
+        </form>
+        <br>
+    </div>
 
-    <br>
-
-    <!-- Таблиця для ПОКАЗУ всіх рейсів -->
     <h3>Список рейсів у базі:</h3>
     <table>
         <thead>
@@ -50,30 +58,17 @@
                 <th>Місто</th>
                 <th>Країна</th>
                 <th>Номер рейсу</th>
-                <th>Дія</th>
+                <th sec:authorize="hasRole('ADMIN')">Дія</th>
             </tr>
         </thead>
         <tbody>
-            <!-- 
-              Thymeleaf сам пройдеться по списку "flights",
-              який ми передали з FlightController.java
-            -->
             <tr th:each="flight : ${flights}">
                 <td th:text="${flight.id}">1</td>
                 <td th:text="${flight.city}">Київ</td>
                 <td th:text="${flight.country}">Україна</td>
                 <td th:text="${flight.flightNumber}">PS-001</td>
-                <td>
-                    <!-- 
-                      Посилання "Редагувати", яке веде на /edit-flight
-                      і передає ID рейсу
-                    -->
+                <td sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/edit-flight(id=${flight.id})}" class="edit-link">Редагувати</a>
-                    
-                    <!-- 
-                      Посилання для ВИДАЛЕННЯ, яке безпечно 
-                      передає ID в FlightController
-                    -->
                     <a th:href="@{/delete-flight(id=${flight.id})}" class="delete-link">Видалити</a>
                 </td>
             </tr>
